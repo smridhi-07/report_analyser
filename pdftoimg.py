@@ -23,5 +23,5 @@ def pdf_to_images(pdf_path, output_folder="slides"):
 
     doc.close()
 
-pdf_to_images("Z615.pdf")
+
 
