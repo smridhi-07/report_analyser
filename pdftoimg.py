@@ -15,7 +15,7 @@ def pdf_to_images(pdf_path, output_folder="slides"):
 
         page = doc.load_page(x)
 
-        pix = page.get_pixmap(matrix=fitz.Matrix(0.8,0.8))
+        pix = page.get_pixmap(matrix=fitz.Matrix(1.2,1.2))
 
         path = f"{output_folder}/page_{x + 1}.png"
 

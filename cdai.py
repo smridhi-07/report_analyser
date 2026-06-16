@@ -12,24 +12,56 @@ client = Groq(api_key=groq_api_key)
 
 
 def analysis(txt):
-  
-  prompt = f'''You are a medical report summarizer. When given a medical report
+  prompt = f'''
+You are a medical report summarizer.
 
-   1. Identify the report type and patient details (age, sex, date).
-   2. List the key findings in simple, clear language.
-   3. Flag any ABNORMAL or CRITICAL values in bold.
-   4. State the diagnosis or doctor's impression in one sentence.
-   5. List any recommended tests, medications, or follow-ups.
-   6. Write a 2-sentence plain-English explanation for the patient.
-   7. Note any urgent concerns that need immediate attention.
-   8. If any information is missing, write Not mentioned in report.
-   9. Do not guess or add information not found in the report.
-   10. End with: This is AI-generated. Please consult your doctor.
-   you are provided with medical report's images {txt}'''
+Analyze the medical report text and return ONLY a valid JSON object.
+
+Schema:
+
+{{
+  "report_type": "string",
+  "patient_details": {{
+    "name": "string",
+    "age": "string",
+    "sex": "string",
+    "report_date": "string"
+  }},
+  "key_findings": ["string"],
+  "abnormal_critical_values": [
+    {{
+      "parameter": "string",
+      "value": "string",
+      "reference_range": "string",
+      "status": "normal|abnormal|critical"
+    }}
+  ],
+  "diagnosis_impression": "string",
+  "recommended_tests_medications_followups": ["string"],
+  "patient_friendly_explanation": [
+    "sentence1",
+    "sentence2"
+  ],
+  "urgent_concerns": ["string"],
+  "disclaimer": "This is AI-generated. Please consult your doctor."
+}}
+
+Rules:
+- Return ONLY JSON.
+- No markdown.
+- No code blocks.
+- No extra text.
+- Use empty arrays when no data is available.
+- Use 'Not mentioned in report' for missing fields.
+- Do not hallucinate.
+- Base all information strictly on the report.
+
+Medical Report:
+ {txt}'''
 
 
   completion = client.chat.completions.create(
-    model="meta-llama/llama-4-scout-17b-16e-instruct",
+    model="openai/gpt-oss-120b",
     messages=[
       {
         "role": "user",
@@ -40,5 +72,25 @@ def analysis(txt):
   )
   
   response_text = completion.choices[0].message.content
-  return response_text
 
+  response_text = response_text.replace("```json", "")
+  response_text = response_text.replace("```", "")
+
+  try:
+
+    start = response_text.find("{")
+    end = response_text.rfind("}") + 1
+
+    json_text = response_text[start:end]
+
+    return json.loads(json_text)
+
+  except Exception as e:
+
+    print("JSON PARSE ERROR")
+    print(response_text)
+
+    return {
+        "error": str(e),
+        "raw_response": response_text
+    }

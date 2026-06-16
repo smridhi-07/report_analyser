@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Clinical Report Analysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F5F7F6;
+    --panel: #FFFFFF;
+    --ink-900: #16213A;
+    --ink-700: #3B4A66;
+    --ink-500: #6E7C92;
+    --line: #DCE3E7;
+    --line-strong: #B9C4CC;
+    --teal: #0E7C86;
+    --teal-dim: #E4F1F1;
+    --teal-ink: #0B5B62;
+    --critical: #B23B3B;
+    --critical-bg: #FBEAEA;
+    --abnormal: #B97326;
+    --abnormal-bg: #FCF1E1;
+    --normal: #2F7D52;
+    --normal-bg: #EAF6EE;
+    --radius: 3px;
+    --serif: "Source Serif 4", Georgia, serif;
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+    --mono: "IBM Plex Mono", "SFMono-Regular", Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--paper);
+    color: var(--ink-900);
+    font-family: var(--sans);
+  }
+
+  body {
+    background-image:
+      linear-gradient(var(--paper) 0%, var(--paper) 100%);
+  }
+
+  .page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* ---------- Letterhead ---------- */
+
+  .letterhead {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 18px;
+    border-bottom: 2px solid var(--ink-900);
+    margin-bottom: 36px;
+  }
+
+  .letterhead-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .emblem {
+    width: 42px;
+    height: 42px;
+    border: 1.5px solid var(--ink-900);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .emblem svg { width: 22px; height: 22px; color: var(--ink-900); }
+
+  .letterhead-title {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 23px;
+    letter-spacing: 0.2px;
+    line-height: 1.15;
+  }
+
+  .letterhead-eyebrow {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--teal-ink);
+    margin-bottom: 3px;
+  }
+
+  .letterhead-right {
+    text-align: right;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-500);
+    line-height: 1.6;
+  }
+
+  /* ---------- Upload card ---------- */
+
+  .intake {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 28px;
+  }
+
+  .intake-label {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--ink-500);
+    margin-bottom: 14px;
+  }
+
+  .dropzone {
+    border: 1.5px dashed var(--line-strong);
+    border-radius: var(--radius);
+    padding: 38px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+
+  .dropzone:hover,
+  .dropzone:focus-visible {
+    border-color: var(--teal);
+    background: var(--teal-dim);
+    outline: none;
+  }
+
+  .dropzone.dragover {
+    border-color: var(--teal);
+    background: var(--teal-dim);
+  }
+
+  .dropzone svg { width: 30px; height: 30px; color: var(--ink-500); margin-bottom: 10px; }
+
+  .dropzone-text {
+    font-size: 14.5px;
+    color: var(--ink-700);
+  }
+
+  .dropzone-text strong { color: var(--teal-ink); font-weight: 600; }
+
+  .dropzone-sub {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-500);
+    margin-top: 6px;
+  }
+
+  .file-chip {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 16px;
+    padding: 10px 14px;
+    background: var(--teal-dim);
+    border: 1px solid #BFE0DF;
+    border-radius: var(--radius);
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--teal-ink);
+  }
+
+  .file-chip.show { display: flex; }
+
+  .file-chip button {
+    background: none;
+    border: none;
+    color: var(--ink-500);
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 0 2px;
+  }
+
+  .intake-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 20px;
+  }
+
+  .btn-primary {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 14px;
+    color: #fff;
+    background: var(--ink-900);
+    border: none;
+    border-radius: var(--radius);
+    padding: 11px 22px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .btn-primary:hover:not(:disabled) { background: var(--teal-ink); }
+
+  .btn-primary:disabled {
+    background: var(--line-strong);
+    cursor: not-allowed;
+  }
+
+  .btn-secondary {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 13.5px;
+    color: var(--ink-700);
+    background: transparent;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    padding: 10px 18px;
+    cursor: pointer;
+  }
+
+  .btn-secondary:hover { border-color: var(--ink-700); }
+
+  .error-banner {
+    display: none;
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: var(--critical-bg);
+    border: 1px solid #E6BDBD;
+    border-radius: var(--radius);
+    color: var(--critical);
+    font-size: 13.5px;
+  }
+
+  .error-banner.show { display: block; }
+
+  details.endpoint-config {
+    margin-top: 22px;
+    border-top: 1px solid var(--line);
+    padding-top: 14px;
+  }
+
+  details.endpoint-config summary {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.6px;
+    color: var(--ink-500);
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+
+  details.endpoint-config input {
+    width: 100%;
+    margin-top: 10px;
+    padding: 9px 10px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    color: var(--ink-700);
+  }
+
+  /* ---------- Loading ---------- */
+
+  .scan-panel {
+    display: none;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 40px 28px;
+    text-align: center;
+  }
+
+  .scan-panel.show { display: block; }
+
+  .scan-doc {
+    position: relative;
+    width: 64px;
+    height: 78px;
+    margin: 0 auto 22px;
+    border: 1.5px solid var(--ink-700);
+    border-radius: 2px;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  .scan-doc::before, .scan-doc::after {
+    content: "";
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    height: 2px;
+    background: var(--line-strong);
+  }
+
+  .scan-doc::before { top: 16px; }
+  .scan-doc::after { top: 26px; }
+
+  .scan-line {
+    position: absolute;
+    left: 0; right: 0;
+    height: 2px;
+    background: var(--teal);
+    box-shadow: 0 0 6px var(--teal);
+    animation: sweep 1.8s ease-in-out infinite;
+  }
+
+  @keyframes sweep {
+    0% { top: 4px; opacity: 0.9; }
+    50% { top: 70px; opacity: 0.5; }
+    100% { top: 4px; opacity: 0.9; }
+  }
+
+  .scan-status {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--ink-700);
+    letter-spacing: 0.3px;
+  }
+
+  .scan-sub {
+    font-size: 12px;
+    color: var(--ink-500);
+    margin-top: 6px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scan-line { animation: none; top: 36px; }
+    .reveal { animation: none !important; opacity: 1 !important; transform: none !important; }
+  }
+
+  /* ---------- Results ---------- */
+
+  .results { display: none; }
+  .results.show { display: block; }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(8px);
+    animation: rise 0.45s ease forwards;
+  }
+
+  @keyframes rise {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .results-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 18px;
+  }
+
+  .results-meta-label {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--ink-500);
+  }
+
+  .results-meta-time {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-500);
+  }
+
+  .patient-strip {
+    background: var(--ink-900);
+    color: #EDF1F4;
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 6px;
+  }
+
+  .patient-field-label {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #9FB3C8;
+    margin-bottom: 4px;
+  }
+
+  .patient-field-value {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    color: #fff;
+  }
+
+  .report-type-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 18px 0 22px;
+    padding: 5px 12px;
+    background: var(--teal-dim);
+    border: 1px solid #BFE0DF;
+    border-radius: 999px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--teal-ink);
+    letter-spacing: 0.3px;
+  }
+
+  .report-type-tag svg { width: 12px; height: 12px; }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    margin-bottom: 18px;
+  }
+
+  .panel-eyebrow {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--teal-ink);
+    margin-bottom: 12px;
+  }
+
+  /* urgent alert */
+  .alert-panel {
+    background: var(--critical-bg);
+    border: 1px solid #E6BDBD;
+    border-left: 4px solid var(--critical);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    margin-bottom: 18px;
+  }
+
+  .alert-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--critical);
+    margin-bottom: 10px;
+  }
+
+  .alert-head svg { width: 15px; height: 15px; }
+
+  .alert-panel ul { margin: 0; padding-left: 20px; }
+  .alert-panel li { color: #7A2A2A; font-size: 14px; margin-bottom: 6px; line-height: 1.5; }
+  .alert-panel li:last-child { margin-bottom: 0; }
+
+  /* diagnosis block */
+  .impression-text {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--ink-900);
+    border-left: 3px solid var(--teal);
+    padding-left: 18px;
+  }
+
+  /* checklists */
+  .checklist { list-style: none; margin: 0; padding: 0; }
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14.5px;
+    color: var(--ink-700);
+    line-height: 1.55;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .checklist li:last-child { border-bottom: none; padding-bottom: 0; }
+  .checklist li svg { width: 15px; height: 15px; flex-shrink: 0; margin-top: 2px; color: var(--teal); }
+
+  .empty-note {
+    font-size: 13.5px;
+    color: var(--ink-500);
+    font-style: italic;
+  }
+
+  /* values table */
+  table.values-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+
+  .values-table thead th {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--ink-500);
+    padding: 0 10px 10px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  .values-table tbody td {
+    padding: 11px 10px 11px 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink-700);
+    vertical-align: top;
+  }
+
+  .values-table tbody tr:last-child td { border-bottom: none; }
+
+  .values-table td.param { color: var(--ink-900); font-weight: 500; }
+  .values-table td.value { font-family: var(--mono); }
+  .values-table td.range { font-family: var(--mono); color: var(--ink-500); }
+
+  .flag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.6px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .flag-normal { background: var(--normal-bg); color: var(--normal); }
+  .flag-abnormal { background: var(--abnormal-bg); color: var(--abnormal); }
+  .flag-critical { background: var(--critical-bg); color: var(--critical); }
+
+  tr.row-critical td.param { border-left: 3px solid var(--critical); padding-left: 9px; }
+  tr.row-abnormal td.param { border-left: 3px solid var(--abnormal); padding-left: 9px; }
+
+  /* plain terms callout */
+  .plain-terms {
+    background: var(--teal-dim);
+    border: 1px solid #BFE0DF;
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    margin-bottom: 18px;
+  }
+
+  .plain-terms p {
+    margin: 0 0 10px 0;
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: #16433F;
+  }
+
+  .plain-terms p:last-child { margin-bottom: 0; }
+
+  /* disclaimer + actions */
+  .disclaimer {
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+    margin-top: 8px;
+    font-size: 12px;
+    font-style: italic;
+    color: var(--ink-500);
+    text-align: center;
+  }
+
+  .results-actions {
+    text-align: center;
+    margin-top: 28px;
+  }
+
+  /* parse-failure panel */
+  .raw-panel pre {
+    background: #FAFAF8;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--ink-700);
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 260px;
+    overflow-y: auto;
+  }
+
+  /* ---------- Responsive ---------- */
+
+  @media (max-width: 620px) {
+    .page { padding: 32px 16px 60px; }
+    .letterhead { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .letterhead-right { text-align: left; }
+    .patient-strip { grid-template-columns: repeat(2, 1fr); }
+
+    table.values-table thead { display: none; }
+    table.values-table, .values-table tbody, .values-table tr, .values-table td {
+      display: block;
+      width: 100%;
+    }
+    .values-table tbody tr {
+      border-bottom: 1px solid var(--line-strong);
+      padding: 12px 0;
+    }
+    .values-table tbody tr:last-child { border-bottom: none; }
+    .values-table tbody td {
+      border-bottom: none;
+      padding: 3px 0;
+    }
+    .values-table td.param { padding-left: 9px; }
+    .values-table td::before {
+      content: attr(data-label);
+      display: block;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: var(--ink-500);
+      margin-bottom: 2px;
+    }
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--teal);
+    outline-offset: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="letterhead">
+    <div class="letterhead-left">
+      <div class="emblem">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v18M5 8h14" stroke-linecap="round"/><circle cx="12" cy="12" r="9"/></svg>
+      </div>
+      <div>
+        <div class="letterhead-eyebrow">AI-Assisted Interpretation</div>
+        <div class="letterhead-title">Clinical Report Analysis</div>
+      </div>
+    </div>
+    <div class="letterhead-right" id="letterheadRight">
+      Upload a report to begin
+    </div>
+  </header>
+
+  <!-- Intake / upload -->
+  <section class="intake" id="intakeCard">
+    <div class="intake-label">Step 1 — Submit report</div>
+
+    <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload PDF report">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 16V4m0 0L7 9m5-5l5 5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3" stroke-linecap="round"/></svg>
+      <div class="dropzone-text"><strong>Drop a PDF</strong> here, or click to browse</div>
+      <div class="dropzone-sub">PDF reports only — lab results, imaging, discharge summaries</div>
+    </div>
+
+    <input type="file" id="fileInput" accept="application/pdf,.pdf" style="display:none" />
+
+    <div class="file-chip" id="fileChip">
+      <span id="fileChipName"></span>
+      <button type="button" id="fileChipClear" aria-label="Remove file">&times;</button>
+    </div>
+
+    <div class="intake-actions">
+      <button class="btn-primary" id="analyzeBtn" disabled>Analyze report</button>
+    </div>
+
+    <div class="error-banner" id="errorBanner"></div>
+
+    <details class="endpoint-config">
+      <summary>API endpoint</summary>
+      <input type="text" id="endpointInput" value="http://localhost:8000/analyse" />
+    </details>
+  </section>
+
+  <!-- Scanning state -->
+  <section class="scan-panel" id="scanPanel">
+    <div class="scan-doc"><div class="scan-line"></div></div>
+    <div class="scan-status" id="scanStatus">Uploading report…</div>
+    <div class="scan-sub">This can take up to a minute for longer documents.</div>
+  </section>
+
+  <!-- Results -->
+  <section class="results" id="resultsSection"></section>
+
+</div>
+
+<script>
+(function () {
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+  const fileChip = document.getElementById('fileChip');
+  const fileChipName = document.getElementById('fileChipName');
+  const fileChipClear = document.getElementById('fileChipClear');
+  const analyzeBtn = document.getElementById('analyzeBtn');
+  const errorBanner = document.getElementById('errorBanner');
+  const intakeCard = document.getElementById('intakeCard');
+  const scanPanel = document.getElementById('scanPanel');
+  const scanStatus = document.getElementById('scanStatus');
+  const resultsSection = document.getElementById('resultsSection');
+  const endpointInput = document.getElementById('endpointInput');
+  const letterheadRight = document.getElementById('letterheadRight');
+
+  let selectedFile = null;
+  let scanInterval = null;
+
+  const SCAN_STAGES = [
+    'Uploading report…',
+    'Converting pages to images…',
+    'Reading text from pages (OCR)…',
+    'Generating clinical summary…'
+  ];
+
+  function showError(msg) {
+    errorBanner.textContent = msg;
+    errorBanner.classList.add('show');
+  }
+
+  function clearError() {
+    errorBanner.classList.remove('show');
+    errorBanner.textContent = '';
+  }
+
+  function setFile(file) {
+    if (!file) return;
+    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+    if (!isPdf) {
+      showError('That file doesn\'t look like a PDF. Please choose a .pdf report.');
+      return;
+    }
+    clearError();
+    selectedFile = file;
+    fileChipName.textContent = file.name;
+    fileChip.classList.add('show');
+    analyzeBtn.disabled = false;
+  }
+
+  function clearFile() {
+    selectedFile = null;
+    fileInput.value = '';
+    fileChip.classList.remove('show');
+    analyzeBtn.disabled = true;
+  }
+
+  dropzone.addEventListener('click', () => fileInput.click());
+  dropzone.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+  });
+
+  ['dragenter', 'dragover'].forEach(evt => {
+    dropzone.addEventListener(evt, (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+  });
+
+  ['dragleave', 'drop'].forEach(evt => {
+    dropzone.addEventListener(evt, (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+    });
+  });
+
+  dropzone.addEventListener('drop', (e) => {
+    const file = e.dataTransfer.files && e.dataTransfer.files[0];
+    setFile(file);
+  });
+
+  fileInput.addEventListener('change', (e) => setFile(e.target.files[0]));
+  fileChipClear.addEventListener('click', (e) => { e.stopPropagation(); clearFile(); });
+
+  function startScanCycle() {
+    let i = 0;
+    scanStatus.textContent = SCAN_STAGES[0];
+    scanInterval = setInterval(() => {
+      i = Math.min(i + 1, SCAN_STAGES.length - 1);
+      scanStatus.textContent = SCAN_STAGES[i];
+    }, 3200);
+  }
+
+  function stopScanCycle() {
+    clearInterval(scanInterval);
+  }
+
+  analyzeBtn.addEventListener('click', async () => {
+    if (!selectedFile) return;
+    clearError();
+
+    intakeCard.style.display = 'none';
+    scanPanel.classList.add('show');
+    resultsSection.classList.remove('show');
+    resultsSection.innerHTML = '';
+    startScanCycle();
+
+    const endpoint = endpointInput.value.trim() || 'http://localhost:8000/analyse';
+    const form = new FormData();
+    form.append('file', selectedFile);
+
+    try {
+      const res = await fetch(endpoint, { method: 'POST', body: form });
+      if (!res.ok) {
+        throw new Error('Server returned status ' + res.status);
+      }
+      const data = await res.json();
+      stopScanCycle();
+      scanPanel.classList.remove('show');
+      renderResults(data);
+    } catch (err) {
+      stopScanCycle();
+      scanPanel.classList.remove('show');
+      intakeCard.style.display = 'block';
+      showError('Could not analyze this report: ' + err.message + '. Check the API endpoint and that the server is running and reachable (CORS enabled).');
+    }
+  });
+
+  function el(tag, attrs, children) {
+    const node = document.createElement(tag);
+    if (attrs) {
+      Object.keys(attrs).forEach(k => {
+        if (k === 'class') node.className = attrs[k];
+        else if (k === 'html') node.innerHTML = attrs[k];
+        else node.setAttribute(k, attrs[k]);
+      });
+    }
+    (children || []).forEach(c => {
+      if (typeof c === 'string') node.appendChild(document.createTextNode(c));
+      else if (c) node.appendChild(c);
+    });
+    return node;
+  }
+
+  const ICON_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const ICON_ALERT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.3 3.9L2.7 17a1.6 1.6 0 001.4 2.4h15.8a1.6 1.6 0 001.4-2.4L13.7 3.9a1.6 1.6 0 00-2.7 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const ICON_TAG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12l-8 8-9-9V4h7l10 10z"/><circle cx="7.5" cy="7.5" r="1.2" fill="currentColor"/></svg>';
+
+  function flagClass(status) {
+    const s = (status || '').toLowerCase();
+    if (s === 'critical') return 'flag-critical';
+    if (s === 'abnormal') return 'flag-abnormal';
+    return 'flag-normal';
+  }
+
+  function rowClass(status) {
+    const s = (status || '').toLowerCase();
+    if (s === 'critical') return 'row-critical';
+    if (s === 'abnormal') return 'row-abnormal';
+    return '';
+  }
+
+  function panel(eyebrow, contentNode, extraClass) {
+    return el('div', { class: 'panel reveal' + (extraClass ? ' ' + extraClass : '') }, [
+      el('div', { class: 'panel-eyebrow' }, [eyebrow]),
+      contentNode
+    ]);
+  }
+
+  function checklist(items, emptyMsg) {
+    if (!items || items.length === 0) {
+      return el('div', { class: 'empty-note' }, [emptyMsg]);
+    }
+    const ul = el('ul', { class: 'checklist' });
+    items.forEach(text => {
+      ul.appendChild(el('li', {}, [
+        el('span', { html: ICON_CHECK }),
+        el('span', {}, [text])
+      ]));
+    });
+    return ul;
+  }
+
+  function renderResults(data) {
+    resultsSection.innerHTML = '';
+
+    if (data && data.error) {
+      const raw = el('div', { class: 'raw-panel' }, [
+        el('pre', {}, [data.raw_response || 'No response captured.'])
+      ]);
+      resultsSection.appendChild(
+        panel('Could not structure this report', el('div', {}, [
+          el('p', { style: 'margin:0 0 14px;color:var(--ink-700);font-size:14px;' }, [
+            'The model\'s response could not be parsed as structured data. Raw output is shown below for reference.'
+          ]),
+          raw
+        ]))
+      );
+      resultsSection.appendChild(buildResetButton());
+      resultsSection.classList.add('show');
+      return;
+    }
+
+    const pd = data.patient_details || {};
+    const now = new Date();
+    letterheadRight.textContent = 'Generated ' + now.toLocaleDateString() + ' · ' + now.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+
+    // meta row
+    resultsSection.appendChild(el('div', { class: 'results-meta reveal' }, [
+      el('div', { class: 'results-meta-label' }, ['Summary']),
+    ]));
+
+    // patient strip
+    const strip = el('div', { class: 'patient-strip reveal' });
+    [['Name', pd.name], ['Age', pd.age], ['Sex', pd.sex], ['Report date', pd.report_date]].forEach(([label, value]) => {
+      strip.appendChild(el('div', {}, [
+        el('div', { class: 'patient-field-label' }, [label]),
+        el('div', { class: 'patient-field-value' }, [value || 'Not mentioned in report'])
+      ]));
+    });
+    resultsSection.appendChild(strip);
+
+    // report type tag
+    if (data.report_type) {
+      resultsSection.appendChild(el('div', { class: 'report-type-tag reveal' }, [
+        el('span', { html: ICON_TAG }),
+        data.report_type
+      ]));
+    } else {
+      resultsSection.appendChild(el('div', { style: 'height:22px' }));
+    }
+
+    // urgent concerns — surfaced first, right after identification
+    if (data.urgent_concerns && data.urgent_concerns.length > 0) {
+      const ul = el('ul');
+      data.urgent_concerns.forEach(c => ul.appendChild(el('li', {}, [c])));
+      resultsSection.appendChild(el('div', { class: 'alert-panel reveal' }, [
+        el('div', { class: 'alert-head' }, [el('span', { html: ICON_ALERT }), 'Urgent concerns']),
+        ul
+      ]));
+    }
+
+    // diagnosis / impression
+    resultsSection.appendChild(panel('Diagnosis / Impression', el('div', { class: 'impression-text' }, [
+      data.diagnosis_impression || 'Not mentioned in report'
+    ])));
+
+    // key findings
+    resultsSection.appendChild(panel('Key findings', checklist(data.key_findings, 'No findings listed in this report.')));
+
+    // values table
+    const values = data.abnormal_critical_values || [];
+    let valuesContent;
+    if (values.length === 0) {
+      valuesContent = el('div', { class: 'empty-note' }, ['No abnormal or critical values flagged.']);
+    } else {
+      const table = el('table', { class: 'values-table' });
+      table.appendChild(el('thead', {}, [
+        el('tr', {}, [
+          el('th', {}, ['Parameter']),
+          el('th', {}, ['Value']),
+          el('th', {}, ['Reference range']),
+          el('th', {}, ['Flag'])
+        ])
+      ]));
+      const tbody = el('tbody');
+      values.forEach(v => {
+        tbody.appendChild(el('tr', { class: rowClass(v.status) }, [
+          el('td', { class: 'param', 'data-label': 'Parameter' }, [v.parameter || '—']),
+          el('td', { class: 'value', 'data-label': 'Value' }, [v.value || '—']),
+          el('td', { class: 'range', 'data-label': 'Reference range' }, [v.reference_range || '—']),
+          el('td', { 'data-label': 'Flag' }, [el('span', { class: 'flag ' + flagClass(v.status) }, [(v.status || 'normal').toUpperCase()])])
+        ]));
+      });
+      table.appendChild(tbody);
+      valuesContent = table;
+    }
+    resultsSection.appendChild(panel('Values', valuesContent));
+
+    // recommended tests / follow-ups
+    resultsSection.appendChild(panel('Recommended tests, medications & follow-ups', checklist(data.recommended_tests_medications_followups, 'No follow-up actions listed.')));
+
+    // patient friendly explanation
+    const sentences = data.patient_friendly_explanation || [];
+    const ptParagraph = el('div', { class: 'plain-terms reveal' }, [
+      el('div', { class: 'panel-eyebrow', style: 'color:#16433F' }, ['In plain terms']),
+      ...(sentences.length
+        ? sentences.map(s => el('p', {}, [s]))
+        : [el('p', {}, ['No plain-language explanation was provided for this report.'])])
+    ]);
+    resultsSection.appendChild(ptParagraph);
+
+    // disclaimer
+    resultsSection.appendChild(el('div', { class: 'disclaimer reveal' }, [
+      data.disclaimer || 'This is AI-generated. Please consult your doctor.'
+    ]));
+
+    resultsSection.appendChild(buildResetButton());
+
+    // stagger reveal animation
+    resultsSection.querySelectorAll('.reveal').forEach((node, i) => {
+      node.style.animationDelay = (i * 55) + 'ms';
+    });
+
+    resultsSection.classList.add('show');
+  }
+
+  function buildResetButton() {
+    const wrap = el('div', { class: 'results-actions reveal' }, [
+      el('button', { class: 'btn-secondary', id: 'resetBtn' }, ['Analyze another report'])
+    ]);
+    setTimeout(() => {
+      const btn = wrap.querySelector('#resetBtn');
+      if (btn) btn.addEventListener('click', resetFlow);
+    }, 0);
+    return wrap;
+  }
+
+  function resetFlow() {
+    clearFile();
+    clearError();
+    resultsSection.classList.remove('show');
+    resultsSection.innerHTML = '';
+    letterheadRight.textContent = 'Upload a report to begin';
+    intakeCard.style.display = 'block';
+  }
+})();
+</script>
+
+</body>
+</html>
