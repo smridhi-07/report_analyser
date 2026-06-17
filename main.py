@@ -6,6 +6,16 @@ import os
 from fastapi import FastAPI,File,UploadFile
 app=FastAPI()
 
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  
+    allow_methods=["*"],
+    allow_headers=["*"],
+    allow_credentials=False,
+)
+
 UPLOAD_DIR = "uploaddir"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 

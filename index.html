@@ -720,6 +720,8 @@
     'Reading text from pages (OCR)…',
     'Generating clinical summary…'
   ];
+  const STAGE_INTERVAL_MS = 1100;
+  const MIN_SCAN_VISIBLE_MS = SCAN_STAGES.length * STAGE_INTERVAL_MS;
 
   function showError(msg) {
     errorBanner.textContent = msg;
@@ -785,7 +787,7 @@
     scanInterval = setInterval(() => {
       i = Math.min(i + 1, SCAN_STAGES.length - 1);
       scanStatus.textContent = SCAN_STAGES[i];
-    }, 3200);
+    }, STAGE_INTERVAL_MS);
   }
 
   function stopScanCycle() {
@@ -806,8 +808,13 @@
     const form = new FormData();
     form.append('file', selectedFile);
 
+    const minDelay = new Promise(resolve => setTimeout(resolve, MIN_SCAN_VISIBLE_MS));
+
     try {
-      const res = await fetch(endpoint, { method: 'POST', body: form });
+      const [res] = await Promise.all([
+        fetch(endpoint, { method: 'POST', body: form }),
+        minDelay
+      ]);
       if (!res.ok) {
         throw new Error('Server returned status ' + res.status);
       }
@@ -816,6 +823,7 @@
       scanPanel.classList.remove('show');
       renderResults(data);
     } catch (err) {
+      await minDelay;
       stopScanCycle();
       scanPanel.classList.remove('show');
       intakeCard.style.display = 'block';
