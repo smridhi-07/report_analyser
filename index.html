@@ -679,7 +679,7 @@
 
     <details class="endpoint-config">
       <summary>API endpoint</summary>
-      <input type="text" id="endpointInput" value="http://localhost:8000/analyse" />
+      <input type="text" id="endpointInput" value="reportanalyser-production.up.railway.app" />
     </details>
   </section>
 
@@ -804,7 +804,7 @@
     resultsSection.innerHTML = '';
     startScanCycle();
 
-    const endpoint = endpointInput.value.trim() || 'http://localhost:8000/analyse';
+    const endpoint = endpointInput.value.trim() || 'reportanalyser-production.up.railway.app';
     const form = new FormData();
     form.append('file', selectedFile);
 
