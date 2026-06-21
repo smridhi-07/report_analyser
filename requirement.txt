@@ -1,0 +1,10 @@
+shutil
+json
+base64
+fastapi
+uvicorn
+python-multipart
+easyocr
+groq
+python-dotenv
+pymupdf
