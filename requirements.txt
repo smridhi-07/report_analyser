@@ -1,4 +1,3 @@
-shutil
 json
 base64
 fastapi
