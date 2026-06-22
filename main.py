@@ -1,16 +1,17 @@
-from pdftoimg import pdf_to_images
-from imgtotxt import ocr_slides
-from cdai import analysis
 import os
+import fitz
 
-from fastapi import FastAPI,File,UploadFile
-app=FastAPI()
+from cdai import analysis
 
+from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
     allow_credentials=False,
@@ -19,25 +20,40 @@ app.add_middleware(
 UPLOAD_DIR = "uploaddir"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+
 @app.get("/")
 def home():
-  return {"message":"backend running"}
+    return {"message": "backend running"}
+
+
+def extract_text_from_pdf(file_path: str) -> str:
+    text_parts = []
+    with fitz.open(file_path) as doc:
+        for page in doc:
+            text_parts.append(page.get_text())
+    return "\n".join(text_parts)
+
 
 @app.post("/analyse")
-async def analyses( file: UploadFile = File(...) ):
-  if file.content_type != "application/pdf":
-    return
-  
-  file_path=os.path.join(UPLOAD_DIR,file.filename)
+async def analyses(file: UploadFile = File(...)):
+    if file.content_type != "application/pdf":
+        return JSONResponse(
+            status_code=400,
+            content={"error": "Only PDF files are accepted."}
+        )
 
-  with open(file_path, "wb") as buffer:
-    buffer.write(file.file.read())
+    file_path = os.path.join(UPLOAD_DIR, file.filename)
 
-  pdf_to_images(file_path)
-  x=ocr_slides()
-  s="".join(x)
-  
-  y=analysis(s)
-  return y
-  
- 
+    with open(file_path, "wb") as buffer:
+        buffer.write(file.file.read())
+
+    extracted_text = extract_text_from_pdf(file_path)
+
+    if not extracted_text.strip():
+        return JSONResponse(
+            status_code=422,
+            content={"error": "No selectable text found in this PDF."}
+        )
+
+    result = analysis(extracted_text)
+    return result
