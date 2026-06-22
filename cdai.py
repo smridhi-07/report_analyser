@@ -82,6 +82,7 @@ Medical Report Text:
       }
     ],
     temperature=0.1,
+    max_tokens=4096,
   )
   
   response_text = completion.choices[0].message.content
