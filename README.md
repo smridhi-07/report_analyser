@@ -40,10 +40,10 @@ An AI-powered web app that analyses medical lab reports (PDFs) and returns a str
  
 ```
 report_analyser/
-├── main.py          # FastAPI backend — handles PDF upload and orchestration
-├── cdai.py          # Groq LLM integration — prompt engineering and analysis
-├── requirements.txt # Python dependencies
-├── index.html       # Frontend — single file UI
-├── .env             # Environment variables (not committed)
+├── main.py          
+├── cdai.py         
+├── requirements.txt 
+├── index.html      
+├── .env             
 └── .gitignore
 ```
