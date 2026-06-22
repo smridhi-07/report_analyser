@@ -1,9 +1,9 @@
-from imgtotxt import ocr_slides
+
 from groq import Groq
 from dotenv import load_dotenv
 import os
 import json
-import base64
+
 
 load_dotenv()
 groq_api_key = os.getenv("GROQ_API_KEY")
