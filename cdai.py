@@ -27,6 +27,7 @@ def analysis(txt):
   8. key_findings must only describe what is actually reported with actual values — never describe tests that have no result yet.
   9. If the report is interim/partial, state that clearly in diagnosis_impression.
   10. patient_friendly_explanation must be based only on actual reported values — if most results are pending, say so plainly.
+  11. Never confuse a reference range value with a test result. The result is in the "Results" column. The reference range is in the "Bio. Ref. Interval" column. If the Results column is blank, the value is "Not reported" regardless of what the reference range says.
  
   Return ONLY a valid JSON object matching this schema exactly:
  
