@@ -48,7 +48,8 @@ async def analyses(file: UploadFile = File(...)):
         buffer.write(file.file.read())
 
     extracted_text = extract_text_from_pdf(file_path)
-
+    extracted_text = extracted_text[:20000]
+    
     if not extracted_text.strip():
         return JSONResponse(
             status_code=422,
