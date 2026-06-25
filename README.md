@@ -91,9 +91,20 @@ GROQ_API_KEY=your_groq_api_key_here
 ```bash
 uvicorn main:app --reload --port 8000
 ```
- 
-### 5. Open the frontend
-Open `index.html` via Live Server (VS Code extension) or any local HTTP server. Then set the API endpoint to:
+
+To use the live site, set the API endpoint field to:
 ```
-http://localhost:8000/analyse
+https://report-analyser-d63u.onrender.com/analyse
+```
+ 
+
+## Disclaimer
+ 
+This tool is AI-generated and intended for informational purposes only. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified doctor for interpretation of medical reports.
+ 
+---
+ 
+## Author
+ 
+Built by [smridhi-07]
 ```
