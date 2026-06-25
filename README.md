@@ -1,5 +1,3 @@
-
-Readme · MD
 # 🏥 Clinical Report Analyser
  
 An AI-powered web app that analyses medical lab reports (PDFs) and returns a structured, patient-friendly summary — flagging abnormal values, key findings, and urgent concerns.
@@ -96,7 +94,14 @@ To use the live site, set the API endpoint field to:
 ```
 https://report-analyser-d63u.onrender.com/analyse
 ```
+
+ ## Environment Variables
  
+| Variable | Description |
+|----------|-------------|
+| `GROQ_API_KEY` | Your Groq API key from console.groq.com |
+ 
+---
 
 ## Disclaimer
  
