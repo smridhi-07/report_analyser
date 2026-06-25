@@ -113,8 +113,6 @@ https://report-analyser-d63u.onrender.com/analyse
 This tool is AI-generated and intended for informational purposes only. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified doctor for interpretation of medical reports.
  
 ---
- 
 ## Author
  
-Built by [smridhi-07]
-```
+Built by [smridhi-07](https://github.com/smridhi-07)
