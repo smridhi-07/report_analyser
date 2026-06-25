@@ -62,6 +62,11 @@ Frontend renders formatted medical summary
 ```
  
 ---
+## Screenshots
+
+<img width="1021" height="574" alt="image" src="https://github.com/user-attachments/assets/3240b4cd-cd7a-49aa-a1ce-8e7f295e299a" />
+<img width="1016" height="889" alt="Screenshot 2026-06-26 020828" src="https://github.com/user-attachments/assets/8595cffa-b4bd-4cc7-ab41-a2bb062260de" />
+<img width="1050" height="818" alt="image" src="https://github.com/user-attachments/assets/4dad88be-ca3a-4803-ad80-ea7c68e28b6c" />
  
 ## Setup (Local)
  
